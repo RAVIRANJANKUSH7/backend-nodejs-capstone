@@ -1,0 +1,47 @@
+name: SecondChance CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install backend dependencies
+        working-directory: secondChance-backend
+        run: npm install
+
+      - name: Check backend JavaScript
+        run: |
+          node --check secondChance-backend/app.js
+          node --check secondChance-backend/models/db.js
+          node --check secondChance-backend/routes/authRoutes.js
+          node --check secondChance-backend/routes/secondChanceItemsRoutes.js
+          node --check secondChance-backend/routes/searchRoutes.js
+
+      - name: Install sentiment dependencies
+        working-directory: sentiment
+        run: npm install
+
+      - name: Check sentiment service
+        run: node --check sentiment/index.js
+
+      - name: Install frontend dependencies
+        working-directory: secondChance-frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: secondChance-frontend
+        run: npm run build
