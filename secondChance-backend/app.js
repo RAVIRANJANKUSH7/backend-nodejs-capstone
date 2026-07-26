@@ -9,6 +9,7 @@ const logger = require('./logger');
 const connectToDatabase = require('./models/db');
 const secondChanceItemsRoutes = require('./routes/secondChanceItemsRoutes');
 const searchRoutes = require('./routes/searchRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const port = 3060;
@@ -31,6 +32,7 @@ app.use('/api/secondchance/items', secondChanceItemsRoutes);
 
 // Search API
 app.use('/api/secondchance/search', searchRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.send('Inside the server');
