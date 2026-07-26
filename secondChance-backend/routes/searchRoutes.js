@@ -2,36 +2,49 @@ const express = require('express');
 const router = express.Router();
 const connectToDatabase = require('../models/db');
 
-// Search for gifts
+// Search for Second Chance items
 router.get('/', async (req, res, next) => {
     try {
-        // Task 1: Connect to MongoDB using connectToDatabase database. Remember to use the await keyword and store the connection in `db`
-        // {{insert code here}}
+        // Connect to MongoDB
+        const db = await connectToDatabase();
+        const collection = db.collection('secondChanceItems');
 
-        const collection = db.collection("gifts");
-
-        // Initialize the query object
+        // Initialize query
         let query = {};
 
-        // Add the name filter to the query if the name parameter is not empty
-        // if (/* {{insert code here}} */) {
-            query.name = { $regex: req.query.name, $options: "i" }; // Using regex for partial match, case-insensitive
-        // }
+        // Filter by name
+        if (req.query.name) {
+            query.name = {
+                $regex: req.query.name,
+                $options: 'i'
+            };
+        }
 
-        // Task 3: Add other filters to the query
+        // Filter by category
         if (req.query.category) {
-            // {{insert code here}}
-        }
-        if (req.query.condition) {
-            // {{insert code here}} 
-        }
-        if (req.query.age_years) {
-            // {{insert code here}}
-            query.age_years = { $lte: parseInt(req.query.age_years) };
+            query.category = {
+                $regex: req.query.category,
+                $options: 'i'
+            };
         }
 
-        // Task 4: Fetch filtered gifts using the find(query) method. Make sure to use await and store the result in the `gifts` constant
-        // {{insert code here here}}
+        // Filter by condition
+        if (req.query.condition) {
+            query.condition = {
+                $regex: req.query.condition,
+                $options: 'i'
+            };
+        }
+
+        // Filter by maximum age in years
+        if (req.query.age_years) {
+            query.age_years = {
+                $lte: parseFloat(req.query.age_years)
+            };
+        }
+
+        // Fetch matching items
+        const gifts = await collection.find(query).toArray();
 
         res.json(gifts);
     } catch (e) {
